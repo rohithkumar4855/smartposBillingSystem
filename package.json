@@ -1,0 +1,25 @@
+{
+  "name": "smart-billing",
+  "version": "1.0.0",
+  "description": "A RESTful API built with Node.js, Express, and PostgreSQL for store registration, phone verification, and login authentication.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "module": "^2.0.0",
+    "nodemon": "^3.1.10",
+    "pdfkit": "^0.17.2",
+  "json2csv": "^5.0.7",
+  "exceljs": "^4.3.0",
+    "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
+    "uuid": "^13.0.0"
+  }
+}
