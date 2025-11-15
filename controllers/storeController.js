@@ -2,19 +2,21 @@ const pool = require("../db");
 const generateApiKey = require("../utils/generateApikey");
 
 const registerStore = async (req, res) => {
-  const { storeName, ownerName,typeOfBusiness,gstNumber,email , phone, pincode} = req.body;
+  const { storeName, ownerName, typeOfBusiness, gstNumber, email, phone, pincode } = req.body;
 
   try {
-    // ✅ Validate phone number (must be exactly 10 digits)
+    // Validate phone number
     const phoneRegex = /^[0-9]{10}$/;
     if (phone && !phoneRegex.test(phone)) {
       return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
     }
-    if(gstNumber && gstNumber.length!==15){
-      return res.status(400).json({error:"GST number must be exactly 15 characters"})
+
+    // Validate GST
+    if (gstNumber && gstNumber.length !== 15) {
+      return res.status(400).json({ error: "GST number must be exactly 15 characters" });
     }
 
-
+    // Check if store already exists
     const query = `
       SELECT * FROM stores 
       WHERE (email = $1 AND email IS NOT NULL)
@@ -22,6 +24,7 @@ const registerStore = async (req, res) => {
          OR (gst_number = $3 AND gst_number IS NOT NULL)
       LIMIT 1
     `;
+
     const { rows } = await pool.query(query, [email, phone, gstNumber]);
 
     if (rows.length > 0) {
@@ -32,20 +35,25 @@ const registerStore = async (req, res) => {
       });
     }
 
+    // Generate API key
     const apiKey = generateApiKey();
+
+    // Correct INSERT query mapping
     const insertQuery = `
       INSERT INTO stores 
-      (store_name, owner_name,typeof_business, email, phone, gst_number, address,pincode, logo_url, api_key)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      (store_name, owner_name, typeof_business, email, phone, gst_number, pincode, api_key)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
       RETURNING id, api_key
     `;
+
+    // ⚠️ FIXED ORDER → MUST MATCH THE INSERT FIELDS
     const result = await pool.query(insertQuery, [
       storeName || null,
       ownerName || null,
       typeOfBusiness || null,
-      phone || null,
-      gstNumber || null,
-      address || null,
+      email || null,     // Correct position
+      phone || null,     // Correct position
+      gstNumber || null, // Correct position
       pincode || null,
       apiKey,
     ]);
@@ -55,12 +63,12 @@ const registerStore = async (req, res) => {
       apiKey: result.rows[0].api_key,
       message: "Store registered successfully",
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 // ----------------------
 // Get All Stores (Admin Only)
