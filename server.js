@@ -27,3 +27,4 @@ app.listen(PORT, () => {
 
 
 
+app.use(express.json());

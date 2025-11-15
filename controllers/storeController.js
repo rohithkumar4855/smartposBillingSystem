@@ -2,7 +2,7 @@ const pool = require("../db");
 const generateApiKey = require("../utils/generateApikey");
 
 const registerStore = async (req, res) => {
-  const { storeName, ownerName,typeOfBusiness,gstNumber, phone, pincode } = req.body;
+  const { storeName, ownerName,typeOfBusiness,gstNumber,email , phone, pincode} = req.body;
 
   try {
     // ✅ Validate phone number (must be exactly 10 digits)
